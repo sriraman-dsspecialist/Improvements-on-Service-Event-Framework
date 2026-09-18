@@ -1,0 +1,5 @@
+results/*
+*.pyc
+logs/*
+__pycache__
+data/*

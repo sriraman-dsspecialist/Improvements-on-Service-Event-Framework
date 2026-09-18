@@ -1,0 +1,7 @@
+material:
+  duplicity: True
+
+locations:
+  inputs: C:\Projects\Service Event Framework\Improvement\code\data\inputs
+  outputs: C:\Projects\Service Event Framework\Improvement\code\data\outputs
+  queries_folder: C:\Projects\Service Event Framework\Improvement\code\queries
