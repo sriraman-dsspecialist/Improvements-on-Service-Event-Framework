@@ -1,7 +1,6 @@
 import os
 import logging
 from datetime import datetime
-
 from utils.config import config
 
 logger_package_string = "Logger: "
