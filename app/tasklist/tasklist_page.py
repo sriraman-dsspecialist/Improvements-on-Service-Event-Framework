@@ -25,6 +25,18 @@ def _find_col(cols, candidates):
     return None
 
 
+def _and_or_symbol(and_ors) -> str:
+    """Map AND_OR value(s) to a display symbol: & for AND, | for OR, - otherwise."""
+    if not and_ors:
+        return "-"
+    joined = ",".join(and_ors).strip().upper() if isinstance(and_ors, (set, list)) else str(and_ors).strip().upper()
+    if "AND" in joined:
+        return "&"
+    if "OR" in joined:
+        return "|"
+    return "-"
+
+
 def build_tasklist_tree(xlsx_path: Path):
     df = pd.read_excel(xlsx_path)
 
@@ -32,6 +44,7 @@ def build_tasklist_tree(xlsx_path: Path):
     task_col = _find_col(cols, ["TaskListGroup"])
     desc_col = _find_col(cols, ["TaskListDescription"])
     event_col = _find_col(cols, ["Serviceeventcode"])
+    and_or_col = _find_col(cols, ["AND_OR", "And_Or", "AND/OR"])
 
     if task_col is None or desc_col is None:
         st.error("Could not find the required tasklist columns in the Excel file.")
@@ -54,25 +67,34 @@ def build_tasklist_tree(xlsx_path: Path):
         task_id = _normalize_name(row.get(task_col))
         desc = _normalize_name(row.get(desc_col))
         event = _normalize_name(row.get(event_col)) if event_col else "Unknown service event"
+        and_or = _normalize_name(row.get(and_or_col)) if and_or_col else ""
 
         if not task_id:
             continue
 
         key = f"{task_id} - {desc}" if desc else task_id
-        grouped.setdefault(key, {"events": set()})
+        grouped.setdefault(key, {"events": {}})
         if event:
-            grouped[key]["events"].add(event)
+            grouped[key]["events"].setdefault(event, set())
+            if and_or:
+                grouped[key]["events"][event].add(and_or)
 
-    return [{"label": key, "events": sorted(v["events"])} for key, v in grouped.items()]
+    return [
+        {"label": key, "events": {ev: sorted(and_ors) for ev, and_ors in sorted(v["events"].items())}}
+        for key, v in grouped.items()
+    ]
 
 
-def custom_event_badge_html(event_code: str, bg_color: str = "#fef3c7", border_color: str = "#f59e0b"):
+def custom_event_badge_html(event_code: str, symbol: str, bg_color: str = "#fef3c7", border_color: str = "#f59e0b"):
     return f"""
-    <span style="
-        display: block;
+    <div style="
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
         background: {bg_color};
-        border-left: 5px solid {border_color};
-        border-radius: 8px;
+        border-left: 6px solid {border_color};
+        border-radius: 10px;
         padding: 9px 12px;
         color: #0f172a;
         font-weight: 800;
@@ -80,23 +102,33 @@ def custom_event_badge_html(event_code: str, bg_color: str = "#fef3c7", border_c
         margin: 6px 0;
         box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         width: 100%;
+        box-sizing: border-box;
     ">
-        {event_code}
-    </span>
+        <span>{event_code}</span>
+        <span style="
+            background: {border_color};
+            color: white;
+            border-radius: 6px;
+            padding: 3px 9px;
+            font-size: 0.78rem;
+        ">{symbol}</span>
+    </div>
     """
 
 
 def render_tasklist_cards(nodes):
     for node in nodes:
         label = node["label"]
-        events = node.get("events", [])
+        events = node.get("events", {})
 
         with st.container(border=True):
             st.markdown(f"**{label}**")
 
-            if events:
-                for ev in events:
-                    st.markdown(custom_event_badge_html(ev, bg_color="#fef3c7", border_color="#f59e0b"), unsafe_allow_html=True)
+            for ev, and_ors in events.items():
+                st.markdown(
+                    custom_event_badge_html(ev, _and_or_symbol(and_ors), bg_color="#fef3c7", border_color="#f59e0b"),
+                    unsafe_allow_html=True,
+                )
 
 
 def page1():
