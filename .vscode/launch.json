@@ -11,10 +11,10 @@
             "justMyCode": true
         },
         {
-            "name": "Python: main",
+            "name": "Python: specific_file",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/app/tasklist/tasklist_page.py",
+            "program": "${workspaceFolder}/app/material/material_group_conflict_and.py",
             "cwd": "${workspaceFolder}",
             "console": "integratedTerminal",
             "justMyCode": true
