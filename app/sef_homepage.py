@@ -8,6 +8,7 @@ from app.material.material_group_conflict_or import material_group_conflict_page
 from app.material.material_group_conflict_and import material_group_conflict_page_and
 from app.material.materialgroup_mixie import materialgroup_mixie_page
 from app.material.material_multiple_mgs import material_multiple_mgs_page
+from app.material.parent_child_disparity import disparity_parent_child_page
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -29,11 +30,12 @@ mat_page_3_AND = st.Page(material_group_conflict_page_and, title="Material Group
 mat_page_3_OR = st.Page(material_group_conflict_page_or, title="Material Group Conflict \\{OR\\}")
 mat_page_4 = st.Page(materialgroup_mixie_page, title="Material Group Mixie")
 mat_page_5 = st.Page(material_multiple_mgs_page, title="Multiple Material Groups")
+mat_page_6 = st.Page(disparity_parent_child_page, title="Parent and Child Materials")
 
 pg = st.navigation(
     {
         "Task List Group": [st.Page(tasklist_page.page1, title='TaskList Duplicity')],
-        "Material": [mat_page_1, mat_page_2, mat_page_3_AND, mat_page_3_OR, mat_page_4, mat_page_5],
+        "Material": [mat_page_1, mat_page_2, mat_page_3_AND, mat_page_3_OR, mat_page_4, mat_page_5, mat_page_6],
     },
     position="sidebar",
     expanded=False,
