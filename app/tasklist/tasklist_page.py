@@ -135,7 +135,7 @@ def page1():
     st.subheader("Task List Duplicity")
     st.write("TaskListGroups appearing multiple times across different Service Events.")
 
-    xlsx_path = os.path.join(config.locations.outputs, "tasklistgroup_analysis.xlsx")
+    xlsx_path = os.path.join(config.locations.processed, config.input_files.tasklist + "_processed.xlsx")
     if not os.path.exists(xlsx_path):
         st.warning(f"File not found: {xlsx_path}")
         return

@@ -2,10 +2,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: utils.logger",
+            "name": "Run Main",
             "type": "debugpy",
             "request": "launch",
-            "module": "utils.logger",
+            "program": "C:\\Projects\\Service Event Framework\\Improvement\\code\\main.py",
             "cwd": "${workspaceFolder}",
             "console": "integratedTerminal",
             "justMyCode": true

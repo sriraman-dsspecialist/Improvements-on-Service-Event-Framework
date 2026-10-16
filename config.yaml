@@ -1,7 +1,21 @@
-material:
-  duplicity: True
+run:
+  data_fetch: True
+  build_app: True
+
+data_fetch:
+  tasklist: True
+  material:
+  materialgroup:
+  event:
 
 locations:
   inputs: C:\Projects\Service Event Framework\Improvement\code\data\inputs
+  processed: C:\Projects\Service Event Framework\Improvement\code\data\processed
   outputs: C:\Projects\Service Event Framework\Improvement\code\data\outputs
-  queries_folder: C:\Projects\Service Event Framework\Improvement\code\queries
+  sql_queries: C:\Projects\Service Event Framework\Improvement\code\queries
+  streamlit_app: C:\Projects\Service Event Framework\Improvement\code\app\sef_homepage.py
+
+input_files:
+  tasklist: ServiceEvent_TaskListGroup
+  tasklist_descriptions: Tasklist_Descriptions
+

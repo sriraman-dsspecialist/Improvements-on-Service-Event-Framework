@@ -56,7 +56,7 @@ def sql_to_df(filename, return_query = 0):
         OR
         tuple: (DataFrame, str) if return_query=1, containing both results and query string
     """
-    file_path = os.path.join(os.getcwd(), 'sql', filename+'.sql')
+    file_path = os.path.join(config.locations.sql_queries, filename+'.sql')
     sql_query = read_sql_file(file_path)
     df = pd.read_sql(sql_query, sqlengine)
     if return_query: return df, sql_query

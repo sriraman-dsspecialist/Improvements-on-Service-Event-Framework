@@ -7,3 +7,4 @@ conn_str = (
 )
 
 
+list_of_input_files = ['ServiceEvent_TaskListGroup.xlsx']
