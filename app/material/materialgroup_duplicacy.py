@@ -37,8 +37,8 @@ def _and_or_symbol(and_ors) -> str:
     return "-"
 
 
-def build_materialgroup_tree(xlsx_path: Path, sheet_name: str):
-    df = pd.read_excel(xlsx_path, sheet_name=sheet_name)
+def build_materialgroup_tree(xlsx_path: Path):
+    df = pd.read_excel(xlsx_path)
 
     cols = list(df.columns)
     group_col = _find_col(cols, ["MaterialGroup"])
@@ -128,12 +128,12 @@ def materialgroup_duplicacy_page():
     st.subheader("Material Group Duplicity")
     st.write("Material Group appearing multiple times across different Service Events.")
 
-    xlsx_path = os.path.join(config.locations.outputs, "service_event_analysis.xlsx")
+    xlsx_path = os.path.join(config.locations.processed, config.input_files.serviceEvent_materialgroup + "_processed.xlsx")
     if not os.path.exists(xlsx_path):
         st.warning(f"File not found: {xlsx_path}")
         return
 
-    group_tree = build_materialgroup_tree(xlsx_path, sheet_name="materialGroup_duplicacy")
+    group_tree = build_materialgroup_tree(xlsx_path)
     if not group_tree:
         st.info("No material group rows found.")
         return

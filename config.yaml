@@ -4,9 +4,9 @@ run:
 
 data_fetch:
   tasklist: True
-  material:
-  materialgroup:
-  event:
+  material: True
+  materialgroup: True
+  event: True
 
 locations:
   inputs: C:\Projects\Service Event Framework\Improvement\code\data\inputs
@@ -18,4 +18,14 @@ locations:
 input_files:
   tasklist: ServiceEvent_TaskListGroup
   tasklist_descriptions: Tasklist_Descriptions
+  serviceEvent_material: ServiceEvent_Material
+  serviceEvent_materialgroup: ServiceEvent_MaterialGroup
+  parent_child_materials: Material_Parent_Child
 
+processed_files:
+  serviceEvent_material: ServiceEvent_Material
+  serviceEvent_materialgroup: ServiceEvent_MaterialGroup
+  material_materialgroup_conflicts: MaterialGroup_Conflicts
+  materialgroup_mixie: MaterialGroup_Mixie
+  multiple_materialgroups: Multiple_MaterialGroups
+  disparity_materials: Parent_Child_Disparity

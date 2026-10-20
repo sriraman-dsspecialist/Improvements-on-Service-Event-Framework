@@ -15,7 +15,13 @@ def tasklist_duplicity():
     tasklist = pd.read_excel(xlsx_path)
     tasklist_all = tasklist[['Serviceeventcode','TaskListGroup']]
     tasklist_all = tasklist_all.drop_duplicates()
-    tasklist_2 = tasklist_all.loc[tasklist_all['TaskListGroup'].isin(tasklist_all['TaskListGroup'])]
+
+    tasklist_1 = pd.DataFrame(tasklist_all['TaskListGroup'].value_counts())
+    tasklist_1 = tasklist_1.reset_index()
+    tasklist_1.columns = ['TaskListGroup', 'Count']
+    tfg = tasklist_1.loc[tasklist_1['Count'] > 1]
+
+    tasklist_2 = tasklist_all.loc[tasklist_all['TaskListGroup'].isin(tfg['TaskListGroup'])]
     tasklist_2['TaskListGroup'] = tasklist_2['TaskListGroup'].astype('str')
 
     # Preprocess the tasklist IDs to ensure consistent formatting

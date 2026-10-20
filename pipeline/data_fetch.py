@@ -52,3 +52,17 @@ def get_tasklist_descriptions(tasklist_values):
     tasklist_detail.to_excel(os.path.join(config.locations.inputs, config.input_files.tasklist_descriptions+'.xlsx'), index=False)
     logger.info(f"Tasklist descriptions data fetched for {len(tasklist_detail)} TaskListGroups")
     return tasklist_detail
+
+def fetch_input_from_DB(filename = None, need_output=False):
+    """Fetch the intended input data from the database."""
+    if filename is None:
+        raise ValueError("No filename provided for fetching input from the database")
+
+    if filename is None:
+        raise ValueError(f"No SQL query found for filename: {filename}")
+
+    df = sql_to_df(filename)
+    df.to_excel(os.path.join(config.locations.inputs, filename+'.xlsx'), index=False)
+    logger.info(f"{filename} input data fetched with shape {df.shape}")
+    if need_output:
+        return df

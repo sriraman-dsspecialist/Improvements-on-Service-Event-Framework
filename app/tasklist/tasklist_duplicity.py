@@ -131,7 +131,7 @@ def render_tasklist_cards(nodes):
                 )
 
 
-def page1():
+def tasklist_duplicity_page():
     st.subheader("Task List Duplicity")
     st.write("TaskListGroups appearing multiple times across different Service Events.")
 
@@ -156,7 +156,7 @@ def page1():
 
 
 def main():
-    page1()
+    tasklist_duplicity_page()
 
 
 if __name__ == "__main__":

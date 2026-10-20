@@ -200,13 +200,12 @@ def _render_material_group_buttons(material_groups, selected_event):
                 st.session_state[state_key] = None
             else:
                 st.session_state[state_key] = group_id
-            st.rerun()
 
     return st.session_state.get(state_key)
 
 
 def material_multiple_mgs_page():
-    xlsx_path = os.path.join(config.locations.outputs, "multiple_materialGroups_analysis.xlsx")
+    xlsx_path = os.path.join(config.locations.processed, config.processed_files.multiple_materialgroups+ "_processed.xlsx")
     if not os.path.exists(xlsx_path):
         st.warning(f"File not found: {xlsx_path}")
         return

@@ -269,9 +269,9 @@ def _render_material_badges(detail_rows):
 def disparity_parent_child_page():
     st.title("Disparity observed between parent and child materials")
     st.write("Parent material belonging to a particular service event and its associated child materials may be spread out in different service events")
-    xlsx_path = Path(config.locations.outputs) / "disparity_parent_child_analysis.xlsx"
+    xlsx_path = os.path.join(config.locations.processed, config.processed_files.disparity_materials+ "_processed.xlsx")
 
-    if not xlsx_path.exists():
+    if not os.path.exists(xlsx_path):
         st.warning(f"File not found: {xlsx_path}")
         return
 

@@ -125,3 +125,12 @@ def get_float_sequence(start=1, stop=7.99, num=0):
     return pd.Series(np.round(np.linspace(start, stop, num),2))
 
 make_df_cols_lowercase = lambda df: df.rename(columns={col: col.lower() for col in df.columns})
+
+def save_excel_sheets(data_dict, excel_path):
+
+    with pd.ExcelWriter(excel_path, engine="openpyxl") as writer:
+        for sheet_name, df_sheet in data_dict.items():
+            if isinstance(df_sheet, pd.DataFrame):
+                df_sheet.to_excel(writer, sheet_name=sheet_name, index=False)
+            else:
+                pd.DataFrame(df_sheet).to_excel(writer, sheet_name=sheet_name, index=False)

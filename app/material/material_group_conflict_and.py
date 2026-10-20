@@ -36,8 +36,9 @@ def _and_or_symbol(value: str) -> str:
     return "-"
 
 
-def load_material_group_conflicts(xlsx_path: str):
-    df = pd.read_excel(xlsx_path, sheet_name="material_vs_materialGroup")
+def load_material_group_conflicts(xlsx_path: str, num_conflicts=100):
+    # TODO: num_conflicts can come from the config
+    df = pd.read_excel(xlsx_path)
 
     cols = list(df.columns)
     event_primary_col = _find_col(cols, ["Serviceeventcode_primary"])
@@ -65,7 +66,7 @@ def load_material_group_conflicts(xlsx_path: str):
         return pd.DataFrame(columns=list(required_cols.keys()))
 
     df = df.loc[df[and_or_primary_col] == "AND"]
-    df = df.head(100)
+    df = df.head(num_conflicts)
 
     rows = []
     for _, row in df.iterrows():
@@ -334,7 +335,7 @@ def render_conflict_table(df: pd.DataFrame):
 def material_group_conflict_page_and():
     st.subheader("Material vs Material Group Service Event Conflict")
 
-    xlsx_path = os.path.join(config.locations.outputs, "service_event_analysis.xlsx")
+    xlsx_path = os.path.join(config.locations.processed, config.processed_files.material_materialgroup_conflicts + "_processed.xlsx")
 
     if not os.path.exists(xlsx_path):
         st.warning(f"File not found: {xlsx_path}")

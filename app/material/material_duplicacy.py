@@ -25,8 +25,8 @@ def _find_col(cols, candidates):
     return None
 
 
-def build_material_tree(xlsx_path: Path, sheet_name: str):
-    df = pd.read_excel(xlsx_path, sheet_name=sheet_name)
+def build_material_tree(xlsx_path: Path):
+    df = pd.read_excel(xlsx_path)
 
     cols = list(df.columns)
     material_id_col = _find_col(cols, ["Itemnumber", "MaterialNumber", "Material", "Item Number"])
@@ -220,7 +220,6 @@ def render_material_table(nodes):
             st.session_state.moved_materials.update(newly_moved)
             if st.session_state.main_selected_label in newly_moved:
                 st.session_state.main_selected_label = None
-            st.rerun()
 
         # Handle View selection (single-select behavior)
         view_checked = edited_main.loc[edited_main["View"], "Material Name"].tolist()
@@ -230,7 +229,6 @@ def render_material_table(nodes):
         )
         if new_selection != st.session_state.main_selected_label:
             st.session_state.main_selected_label = new_selection
-            st.rerun()
 
     main_nodes_by_label = {n["label"]: n for n in main_nodes}
     selected_node = main_nodes_by_label.get(st.session_state.main_selected_label)
@@ -264,7 +262,6 @@ def render_material_table(nodes):
             st.session_state.moved_materials.difference_update(newly_back)
             if st.session_state.corrected_selected_label in newly_back:
                 st.session_state.corrected_selected_label = None
-            st.rerun()
 
         corrected_view_checked = edited_corrected.loc[edited_corrected["View"], "Material Name"].tolist()
         new_corrected_selection = next(
@@ -273,7 +270,6 @@ def render_material_table(nodes):
         )
         if new_corrected_selection != st.session_state.corrected_selected_label:
             st.session_state.corrected_selected_label = new_corrected_selection
-            st.rerun()
     else:
         st.caption("No materials moved to Corrected yet.")
 
@@ -282,12 +278,12 @@ def material_duplicacy_page():
     st.subheader("Material Duplicity")
     st.write("Material appearing multiple times across different Service Events.")
 
-    xlsx_path = os.path.join(config.locations.outputs, "service_event_analysis.xlsx")
+    xlsx_path = os.path.join(config.locations.processed, config.input_files.serviceEvent_material + "_processed.xlsx")
     if not os.path.exists(xlsx_path):
         st.warning(f"File not found: {xlsx_path}")
         return
 
-    material_tree = build_material_tree(xlsx_path, sheet_name="material_duplicacy")
+    material_tree = build_material_tree(xlsx_path)
     if not material_tree:
         st.info("No material rows found.")
         return
