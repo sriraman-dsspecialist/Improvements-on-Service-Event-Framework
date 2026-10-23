@@ -36,5 +36,5 @@ def process_multiple_materialgroups(material_df):
         '12mgs': get_mg_n(material_df, df_req, mgg1, n=12)
     }
     save_excel_sheets(mg_dict, os.path.join(config.locations.processed, config.processed_files.multiple_materialgroups+ "_processed.xlsx"))
-    logger.info(f"(5/5) Multiple material groups data processed for {len(material_df)} records")
+    logger.info(f"(5/6) Data processed for Service Event Inconsistencies with {len(material_df)} records")
     

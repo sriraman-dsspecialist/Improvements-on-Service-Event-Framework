@@ -1,4 +1,5 @@
 import os
+import re
 from datetime import datetime, date
 import pandas as pd
 import numpy as np
@@ -43,6 +44,30 @@ def create_directory_if_absent(directory_path):
         os.makedirs(directory_path)
 
 
+def _split_sql_statements(sql_query):
+    """Split a SQL script into executable statements while ignoring database switches like USE."""
+    statements = []
+    for part in sql_query.split(';'):
+        statement = part.strip()
+        if not statement:
+            continue
+        if re.fullmatch(r'USE\s+\w+', statement, flags=re.IGNORECASE):
+            continue
+        statements.append(statement)
+    return statements
+
+
+def _get_result_statement(statements):
+    """Pick the last statement in a script that returns rows so it can be materialized as a DataFrame."""
+    result_statements = [
+        statement for statement in statements
+        if re.search(r'\b(SELECT|WITH)\b', statement, flags=re.IGNORECASE)
+    ]
+    if not result_statements:
+        return statements[-1]
+    return result_statements[-1]
+
+
 def sql_to_df(filename, return_query = 0):
     """
     Executes a SQL query from a file and returns the result as a DataFrame.
@@ -58,8 +83,22 @@ def sql_to_df(filename, return_query = 0):
     """
     file_path = os.path.join(config.locations.sql_queries, filename+'.sql')
     sql_query = read_sql_file(file_path)
-    df = pd.read_sql(sql_query, sqlengine)
-    if return_query: return df, sql_query
+    statements = _split_sql_statements(sql_query)
+    result_statement = _get_result_statement(statements)
+
+    if len(statements) == 1:
+        df = pd.read_sql(result_statement, sqlengine)
+        if return_query: return df, result_statement
+        return df
+
+    with sqlengine.begin() as connection:
+        for statement in statements:
+            if statement == result_statement:
+                break
+            connection.exec_driver_sql(statement)
+        df = pd.read_sql(result_statement, connection)
+
+    if return_query: return df, result_statement
     return df
 
 
@@ -125,6 +164,19 @@ def get_float_sequence(start=1, stop=7.99, num=0):
     return pd.Series(np.round(np.linspace(start, stop, num),2))
 
 make_df_cols_lowercase = lambda df: df.rename(columns={col: col.lower() for col in df.columns})
+
+def load_input_excel(file_key):
+    """Load an Excel file from the configured inputs directory by file key name."""
+    base_dir = Path(config.locations.inputs)
+    file_name = getattr(config.input_files, file_key, None)
+    if file_name is None:
+        raise ValueError(f"No input file configured for '{file_key}'")
+    
+    file_name += '.xlsx'    
+    full_path = (base_dir / file_name).resolve()
+    if full_path.exists():
+        return pd.read_excel(full_path)
+    raise FileNotFoundError(f"No file found for '{file_key}' in {base_dir}")
 
 def save_excel_sheets(data_dict, excel_path):
 

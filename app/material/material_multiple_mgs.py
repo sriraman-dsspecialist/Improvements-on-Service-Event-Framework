@@ -115,6 +115,17 @@ def _load_selected_event_data(xlsx_path, count, selected_event):
     return filtered_df[filtered_df["Service Event Code"] == selected_event].reset_index(drop=True)
 
 
+def _set_selected_event(event_name):
+    st.session_state["selected_event"] = event_name
+    st.session_state.pop(f"material_group_selection_{event_name}", None)
+
+
+def _toggle_selected_group(selected_event, group_id):
+    state_key = f"material_group_selection_{selected_event}"
+    current_value = st.session_state.get(state_key)
+    st.session_state[state_key] = None if current_value == group_id else group_id
+
+
 def _render_material_group_buttons(material_groups, selected_event):
     if not material_groups:
         st.info("No material groups linked to this service event.")
@@ -194,12 +205,11 @@ def _render_material_group_buttons(material_groups, selected_event):
             label,
             key=f"{state_key}_{group_id}",
             type="primary" if is_selected else "secondary",
-            use_container_width=True,
+            width="stretch",
+            on_click=_toggle_selected_group,
+            args=(selected_event, group_id),
         ):
-            if selected_group == group_id:
-                st.session_state[state_key] = None
-            else:
-                st.session_state[state_key] = group_id
+            pass
 
     return st.session_state.get(state_key)
 
@@ -251,17 +261,16 @@ def material_multiple_mgs_page():
         with st.container(height=list_table_height):
             for event_item in events_by_count:
                 event_name = event_item["event"]
-                is_selected = event_name == selected_event
-                if st.button(
+                is_selected = st.session_state.get("selected_event") == event_name
+                st.button(
                     f"{event_name}",
                     key=f"event_{selected_count}_{event_name}",
                     type="primary" if is_selected else "secondary",
-                    use_container_width=True,
+                    width="stretch",
                     help="Select service event",
-                ):
-                    selected_event = event_name
-                    st.session_state["selected_event"] = event_name
-                    st.session_state.pop(f"material_group_selection_{event_name}", None)
+                    on_click=_set_selected_event,
+                    args=(event_name,),
+                )
 
     with middle_col:
         selected_event_data = next((item for item in events_by_count if item["event"] == selected_event), None)
@@ -286,7 +295,7 @@ def material_multiple_mgs_page():
             if not table_df.empty:
                 st.dataframe(
                     table_df.style.set_properties(**{"font-size": "11px"}),
-                    use_container_width=True,
+                    width="stretch",
                     hide_index=True,
                     height=list_table_height,
                 )

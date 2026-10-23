@@ -1,3 +1,4 @@
+import os
 import sys
 import textwrap
 from pathlib import Path
@@ -14,9 +15,8 @@ from utils.config import config
 
 
 def _load_service_event_orders():
-    input_dir = Path(config.locations.inputs)
-    file_path = input_dir / "ServiceEvent_Order_Count.xlsx"
-    if not file_path.exists():
+    file_path = os.path.join(config.locations.inputs, config.input_files.serviceEvent_distribution +".xlsx")
+    if not os.path.exists(file_path):
         raise FileNotFoundError(f"Service event order count file not found: {file_path}")
 
     df = pd.read_excel(file_path)
@@ -150,7 +150,7 @@ def event_distribution():
         st.subheader(f"Top 5 highest order counts in {left_year}")
         st.caption(f"Showing the 5 service events with the highest order volumes in {left_year}.")
         left_chart_df = _prepare_year_ranking_df(event_df, left_year, ascending=False, limit=5)
-        st.plotly_chart(_build_event_bubble_chart(left_chart_df, dot_color="#2563eb"), use_container_width=True)
+        st.plotly_chart(_build_event_bubble_chart(left_chart_df, dot_color="#2563eb"), width="stretch")
 
     with col_right:
         right_year = st.selectbox(
@@ -163,7 +163,7 @@ def event_distribution():
         st.subheader(f"Top 5 lowest order counts in {right_year}")
         st.caption(f"Showing the 5 service events with the lowest order volumes in {right_year}.")
         right_chart_df = _prepare_year_ranking_df(event_df, right_year, ascending=True, limit=5)
-        st.plotly_chart(_build_event_bubble_chart(right_chart_df, dot_color="#ef4444"), use_container_width=True)
+        st.plotly_chart(_build_event_bubble_chart(right_chart_df, dot_color="#ef4444"), width="stretch")
 
     st.divider()
     st.subheader("Service Event Trend Explorer")
@@ -192,7 +192,7 @@ def event_distribution():
         )
 
     explorer_df = _event_timeline_long([selected_event], event_df, wrap_legend=True)
-    st.plotly_chart(_build_timeline_bubble_chart(explorer_df, dot_color="#10b981", height=440), use_container_width=True)
+    st.plotly_chart(_build_timeline_bubble_chart(explorer_df, dot_color="#10b981", height=440), width="stretch")
 
 
 def main():

@@ -7,6 +7,18 @@ from pathlib import Path
 from utils.utility import sql_to_df
 from utils.logger import logger
 
+LEGACY_SQL_ALIASES = {
+    "Service_Event_Distribution": "ServiceEvent_Order_Counts",
+}
+
+
+def resolve_sql_filename(filename):
+    if filename is None:
+        return None
+    normalized = filename[:-4] if filename.lower().endswith(".sql") else filename
+    return LEGACY_SQL_ALIASES.get(normalized, normalized)
+
+
 def fetch_tasklist_input():
     """Fetch tasklist input data from the database."""
     sql_filename = config.input_files.tasklist
@@ -40,11 +52,16 @@ def get_tasklist_descriptions(tasklist_values):
     WHERE SAPGroup IN ({values_sql})
     """
 
-    # start_time = pd.Timestamp.now()
-    # logger.info(f"Executing SQL query to fetch tasklist descriptions")
-    tasklist_detail = pd.read_sql_query(sql, engine)
-    # end_time = pd.Timestamp.now()
-    # logger.info(f"Time taken to fetch tasklist descriptions: {(end_time - start_time)} seconds")
+    if not config.data_fetch.tasklist:
+        # start_time = pd.Timestamp.now()
+        # logger.info(f"Executing SQL query to fetch tasklist descriptions")
+        tasklist_detail = pd.read_sql_query(sql, engine)
+        # end_time = pd.Timestamp.now()
+        # logger.info(f"Time taken to fetch tasklist descriptions: {(end_time - start_time)} seconds")
+    else:
+        tasklist_desc_path = os.path.join(config.locations.inputs, config.input_files.tasklist_descriptions+'.xlsx')
+        tasklist_detail = pd.read_excel(tasklist_desc_path)
+        logger.info(f"Tasklist descriptions loaded from Excel: {tasklist_desc_path}")
 
     tasklist_detail['TaskListGroup'] = tasklist_detail['TaskListGroup'].astype(int)
     tasklist_detail = tasklist_detail.groupby(['TaskListGroup']).agg({'TaskListDescription':'first'})
@@ -58,11 +75,12 @@ def fetch_input_from_DB(filename = None, need_output=False):
     if filename is None:
         raise ValueError("No filename provided for fetching input from the database")
 
-    if filename is None:
+    resolved_filename = resolve_sql_filename(filename)
+    if resolved_filename is None:
         raise ValueError(f"No SQL query found for filename: {filename}")
 
-    df = sql_to_df(filename)
-    df.to_excel(os.path.join(config.locations.inputs, filename+'.xlsx'), index=False)
-    logger.info(f"{filename} input data fetched with shape {df.shape}")
+    df = sql_to_df(resolved_filename)
+    df.to_excel(os.path.join(config.locations.inputs, resolved_filename+'.xlsx'), index=False)
+    logger.info(f"{resolved_filename} input data fetched with shape {df.shape}")
     if need_output:
         return df

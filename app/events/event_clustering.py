@@ -78,10 +78,9 @@ def _show_tooltip_message(message, duration_ms=10000):
 
 
 def _load_event_pairs():
-    output_dir = Path(config.locations.inputs)
-    workbook_path = output_dir / "service_event_inconsistencies.xlsx"
+    workbook_path = os.path.join(config.locations.processed, config.processed_files.event_inconsistencies+ "_processed.xlsx")
 
-    if not workbook_path.exists():
+    if not os.path.exists(workbook_path):
         st.error(f"Workbook not found: {workbook_path}")
         return pd.DataFrame()
 
@@ -242,7 +241,7 @@ def event_clusters():
 
     edited_df = st.data_editor(
         table_df,
-        use_container_width=True,
+        width="stretch",
         hide_index=True,
         disabled=["Primary Event", "Secondary Event"],
         column_config={
@@ -257,7 +256,7 @@ def event_clusters():
         st.subheader("Need Correction")
     with action_col:
         st.write("")
-        if st.button("Save", use_container_width=True):
+        if st.button("Save", width="stretch"):
             output_dir = Path(config.locations.outputs)
             output_dir.mkdir(parents=True, exist_ok=True)
             file_path = output_dir / "events_clustering_corrections.xlsx"
@@ -280,7 +279,7 @@ def event_clusters():
                 combined.to_excel(file_path, index=False)
                 _show_tooltip_message(f"Saved to {file_path}")
 
-    st.dataframe(corrected_pairs, hide_index=True, use_container_width=True)
+    st.dataframe(corrected_pairs, hide_index=True, width="stretch")
 
 
 def main():

@@ -1,19 +1,21 @@
 run:
-  data_fetch: True
+  data_fetch: False
+  data_processing: False
   build_app: True
 
 data_fetch:
   tasklist: True
   material: True
-  materialgroup: True
+  materialgroup: False
   event: True
 
 locations:
-  inputs: C:\Projects\Service Event Framework\Improvement\code\data\inputs
-  processed: C:\Projects\Service Event Framework\Improvement\code\data\processed
-  outputs: C:\Projects\Service Event Framework\Improvement\code\data\outputs
-  sql_queries: C:\Projects\Service Event Framework\Improvement\code\queries
-  streamlit_app: C:\Projects\Service Event Framework\Improvement\code\app\sef_homepage.py
+  base_dir: C:/Projects/Service Event Framework/Improvement/code
+  inputs: ${base_dir}/data/inputs
+  processed: ${base_dir}/data/processed
+  outputs: ${base_dir}/data/outputs
+  sql_queries: ${base_dir}/queries
+  streamlit_app: ${base_dir}/app/sef_homepage.py
 
 input_files:
   tasklist: ServiceEvent_TaskListGroup
@@ -21,6 +23,7 @@ input_files:
   serviceEvent_material: ServiceEvent_Material
   serviceEvent_materialgroup: ServiceEvent_MaterialGroup
   parent_child_materials: Material_Parent_Child
+  serviceEvent_distribution: ServiceEvent_Order_Counts
 
 processed_files:
   serviceEvent_material: ServiceEvent_Material
@@ -29,3 +32,4 @@ processed_files:
   materialgroup_mixie: MaterialGroup_Mixie
   multiple_materialgroups: Multiple_MaterialGroups
   disparity_materials: Parent_Child_Disparity
+  event_inconsistencies: Service_Event_Inconsistencies

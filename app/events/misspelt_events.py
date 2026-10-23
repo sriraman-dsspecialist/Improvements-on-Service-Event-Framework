@@ -13,10 +13,9 @@ from utils.config import config
 
 
 def _load_spell_check_rows():
-    input_dir = Path(config.locations.inputs)
-    workbook_path = input_dir / "service_event_inconsistencies.xlsx"
+    workbook_path = os.path.join(config.locations.processed, config.processed_files.event_inconsistencies+ "_processed.xlsx")
 
-    if not workbook_path.exists():
+    if not os.path.exists(workbook_path):
         st.error(f"Workbook not found: {workbook_path}")
         return pd.DataFrame()
 
@@ -53,10 +52,10 @@ def misspelt_events():
     left_col, right_col = st.columns(2)
 
     with left_col:
-        st.dataframe(left_df, use_container_width=True, hide_index=True, height=520)
+        st.dataframe(left_df, width="stretch", hide_index=True, height=520)
 
     with right_col:
-        st.dataframe(right_df, use_container_width=True, hide_index=True, height=520)
+        st.dataframe(right_df, width="stretch", hide_index=True, height=520)
 
 
 def main():

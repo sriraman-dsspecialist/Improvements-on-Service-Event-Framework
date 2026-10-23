@@ -1,6 +1,8 @@
 results/*
 *.pyc
 logs/*
+!logs/.gitkeep
 __pycache__
 data/*
+!data/inputs
 temp/*

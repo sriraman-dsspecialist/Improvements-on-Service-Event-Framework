@@ -202,7 +202,7 @@ def render_material_table(nodes):
         edited_main = st.data_editor(
             main_df,
             hide_index=True,
-            use_container_width=True,
+            width="stretch",
             height=560,
             column_order=["View", "Material Name", "Material IDs", "Move"],
             column_config={
@@ -246,7 +246,7 @@ def render_material_table(nodes):
         edited_corrected = st.data_editor(
             corrected_df,
             hide_index=True,
-            use_container_width=True,
+            width="stretch",
             column_order=["View", "Material Name", "Material IDs", "Move Back"],
             column_config={
                 "View": st.column_config.CheckboxColumn("View"),
