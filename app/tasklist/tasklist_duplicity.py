@@ -12,12 +12,14 @@ from utils.config import config
 
 
 def _normalize_name(value):
+    """Normalize task list values by removing whitespace and blank missing entries."""
     if pd.isna(value):
         return ""
     return str(value).strip()
 
 
 def _find_col(cols, candidates):
+    """Return the first matching tasklist column name from a list of known aliases."""
     for c in candidates:
         for col in cols:
             if str(col).strip().lower() == c.lower():
@@ -38,6 +40,7 @@ def _and_or_symbol(and_ors) -> str:
 
 
 def build_tasklist_tree(xlsx_path: Path):
+    """Build a grouped tasklist tree showing duplicate task groups across service events."""
     df = pd.read_excel(xlsx_path)
 
     cols = list(df.columns)
@@ -86,6 +89,7 @@ def build_tasklist_tree(xlsx_path: Path):
 
 
 def custom_event_badge_html(event_code: str, symbol: str, bg_color: str = "#fef3c7", border_color: str = "#f59e0b"):
+    """Create the badge markup used to display a service event and its AND/OR symbol."""
     return f"""
     <div style="
         display: flex;
@@ -117,6 +121,7 @@ def custom_event_badge_html(event_code: str, symbol: str, bg_color: str = "#fef3
 
 
 def render_tasklist_cards(nodes):
+    """Render the tasklist card layout showing each duplicate task group and its related events."""
     for node in nodes:
         label = node["label"]
         events = node.get("events", {})
@@ -132,6 +137,7 @@ def render_tasklist_cards(nodes):
 
 
 def tasklist_duplicity_page():
+    """Render the tasklist duplicity dashboard page."""
     st.subheader("Task List Duplicity")
     st.write("TaskListGroups appearing multiple times across different Service Events.")
 
@@ -156,6 +162,7 @@ def tasklist_duplicity_page():
 
 
 def main():
+    """Entry point for the tasklist duplicity dashboard page."""
     tasklist_duplicity_page()
 
 

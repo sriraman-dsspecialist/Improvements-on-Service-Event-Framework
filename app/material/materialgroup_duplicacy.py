@@ -12,12 +12,14 @@ from utils.config import config
 
 
 def _normalize_name(value):
+    """Normalize user-facing names by removing whitespace and blank values."""
     if pd.isna(value):
         return ""
     return str(value).strip()
 
 
 def _find_col(cols, candidates):
+    """Find the first matching column alias in a dataframe."""
     for c in candidates:
         for col in cols:
             if str(col).strip().lower() == c.lower():
@@ -38,6 +40,7 @@ def _and_or_symbol(and_ors) -> str:
 
 
 def build_materialgroup_tree(xlsx_path: Path):
+    """Build a grouped material-group tree showing each group's related service events."""
     df = pd.read_excel(xlsx_path)
 
     cols = list(df.columns)
@@ -82,6 +85,7 @@ def build_materialgroup_tree(xlsx_path: Path):
 
 
 def custom_event_badge_html(event_code: str, symbol: str):
+    """Create the compact badge markup used to display a service event with its symbol."""
     return f"""
     <div style="
         display: flex;
@@ -113,6 +117,7 @@ def custom_event_badge_html(event_code: str, symbol: str):
 
 
 def render_materialgroup_cards(nodes):
+    """Render each material group card with the service events tied to it."""
     for node in nodes:
         label = node["label"]
         events = node.get("events", {})
@@ -125,6 +130,7 @@ def render_materialgroup_cards(nodes):
 
 
 def materialgroup_duplicacy_page():
+    """Render the material-group duplicity dashboard page."""
     st.subheader("Material Group Duplicity")
     st.write("Material Group appearing multiple times across different Service Events.")
 
@@ -149,6 +155,7 @@ def materialgroup_duplicacy_page():
 
 
 def main():
+    """Entry point for the material-group duplicity page."""
     materialgroup_duplicacy_page()
 
 

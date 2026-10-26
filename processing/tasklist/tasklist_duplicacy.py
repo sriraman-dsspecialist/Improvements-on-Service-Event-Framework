@@ -8,6 +8,7 @@ from pipeline.data_fetch import get_tasklist_descriptions
 
 
 def tasklist_duplicity():
+    """Detect duplicated task list groups across service events and save the processed output."""
     xlsx_path = os.path.join(config.locations.inputs, config.input_files.tasklist + ".xlsx")
     if not os.path.exists(xlsx_path):
         raise FileNotFoundError(f"File not found: {xlsx_path}")

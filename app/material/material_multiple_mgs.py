@@ -16,12 +16,14 @@ from utils.config import config
 
 
 def _normalize_text(value):
+    """Normalize text values from Excel by stripping whitespace and blanking missing values."""
     if pd.isna(value):
         return ""
     return str(value).strip()
 
 
 def _extract_sheet_count(sheet_name):
+    """Extract the material-group count from a processed sheet name like '3mgs'."""
     match = re.search(r"(\d+)\s*mgs", str(sheet_name).strip().lower())
     if match:
         return int(match.group(1))
@@ -29,6 +31,7 @@ def _extract_sheet_count(sheet_name):
 
 
 def _get_count_options(xlsx_path):
+    """Return the set of available material-group counts defined in the workbook sheets."""
     if not os.path.exists(xlsx_path):
         return []
 
@@ -42,6 +45,7 @@ def _get_count_options(xlsx_path):
 
 
 def _load_events_for_count(xlsx_path, count):
+    """Load every event grouped by a selected material-group count."""
     sheet_name = f"{count}mgs"
     df = pd.read_excel(xlsx_path, sheet_name=sheet_name)
 
@@ -86,6 +90,7 @@ def _load_events_for_count(xlsx_path, count):
 
 
 def _load_selected_event_data(xlsx_path, count, selected_event):
+    """Load the detailed rows for the selected event and material-group count."""
     sheet_name = f"{count}mgs"
     df = pd.read_excel(xlsx_path, sheet_name=sheet_name)
 
@@ -116,17 +121,20 @@ def _load_selected_event_data(xlsx_path, count, selected_event):
 
 
 def _set_selected_event(event_name):
+    """Set the currently selected service event in session state."""
     st.session_state["selected_event"] = event_name
     st.session_state.pop(f"material_group_selection_{event_name}", None)
 
 
 def _toggle_selected_group(selected_event, group_id):
+    """Toggle the selected material-group filter for the active service event."""
     state_key = f"material_group_selection_{selected_event}"
     current_value = st.session_state.get(state_key)
     st.session_state[state_key] = None if current_value == group_id else group_id
 
 
 def _render_material_group_buttons(material_groups, selected_event):
+    """Render the selectable material-group buttons for an event."""
     if not material_groups:
         st.info("No material groups linked to this service event.")
         return None
@@ -215,6 +223,7 @@ def _render_material_group_buttons(material_groups, selected_event):
 
 
 def material_multiple_mgs_page():
+    """Render the page for inspecting service events that have multiple material groups."""
     xlsx_path = os.path.join(config.locations.processed, config.processed_files.multiple_materialgroups+ "_processed.xlsx")
     if not os.path.exists(xlsx_path):
         st.warning(f"File not found: {xlsx_path}")

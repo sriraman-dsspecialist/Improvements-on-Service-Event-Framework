@@ -13,6 +13,11 @@ LEGACY_SQL_ALIASES = {
 
 
 def resolve_sql_filename(filename):
+    """Normalize a configured SQL filename to the expected query name.
+
+    Some historical filenames used older aliases that are still kept for backward
+    compatibility. This helper resolves both the current and legacy query names.
+    """
     if filename is None:
         return None
     normalized = filename[:-4] if filename.lower().endswith(".sql") else filename
@@ -20,13 +25,21 @@ def resolve_sql_filename(filename):
 
 
 def fetch_tasklist_input():
-    """Fetch tasklist input data from the database."""
+    """Fetch tasklist input data from the database and persist it to Excel."""
     sql_filename = config.input_files.tasklist
     df = sql_to_df(sql_filename)
     df.to_excel(os.path.join(config.locations.inputs, sql_filename+'.xlsx'), index=False)
     logger.info(f"Tasklist input data fetched with shape {df.shape}")
 
 def get_tasklist_descriptions(tasklist_values):
+    """Return a cleaned mapping of task list group IDs to their descriptions.
+
+    Parameters
+    ----------
+    tasklist_values : iterable
+        Task list group identifiers to retrieve from the source database or saved
+        Excel files.
+    """
     if not tasklist_values:
         raise ValueError("No TaskListGroup values found")
 
@@ -71,7 +84,15 @@ def get_tasklist_descriptions(tasklist_values):
     return tasklist_detail
 
 def fetch_input_from_DB(filename = None, need_output=False):
-    """Fetch the intended input data from the database."""
+    """Fetch a configured SQL dataset from the database and save a local Excel copy.
+
+    Parameters
+    ----------
+    filename : str, optional
+        Name of the SQL file without the .sql extension.
+    need_output : bool, default False
+        If True, return the DataFrame after saving it locally.
+    """
     if filename is None:
         raise ValueError("No filename provided for fetching input from the database")
 

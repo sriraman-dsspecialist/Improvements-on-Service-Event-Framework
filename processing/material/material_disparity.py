@@ -8,6 +8,7 @@ from utils.logger import logger
 from utils.utility import save_excel_sheets
 
 def disparity_materials(material_df):
+    """Identify parent-child material disparity rows and save the processed output workbook."""
     csv_path = os.path.join(config.locations.inputs, config.input_files.parent_child_materials + ".csv")
     parent_child_df = pd.read_csv(csv_path)
     parent_child_df.columns = ['parent_material', 'child_material']

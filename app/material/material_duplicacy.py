@@ -12,12 +12,14 @@ from utils.config import config
 
 
 def _normalize_name(value):
+    """Normalize a material value by stripping whitespace and converting missing values to empty strings."""
     if pd.isna(value):
         return ""
     return str(value).strip()
 
 
 def _find_col(cols, candidates):
+    """Find the first matching column name from a list of candidate names."""
     for c in candidates:
         for col in cols:
             if str(col).strip().lower() == c.lower():
@@ -26,6 +28,7 @@ def _find_col(cols, candidates):
 
 
 def build_material_tree(xlsx_path: Path):
+    """Build a grouped tree of materials keyed by material name and associated service events."""
     df = pd.read_excel(xlsx_path)
 
     cols = list(df.columns)
@@ -86,6 +89,7 @@ def _and_or_symbol(and_ors: list) -> str:
 
 
 def custom_event_badge_html(event_code: str, symbol: str, highlight: bool = False):
+    """Create the HTML badge used to display a service event and its AND/OR symbol."""
     if highlight:
         return f"""
         <div style="
@@ -141,7 +145,7 @@ def custom_event_badge_html(event_code: str, symbol: str, highlight: bool = Fals
 
 
 def _build_editor_df(nodes, selected_label=None):
-    """Build a dataframe with View + Material columns, Move checkbox placed last."""
+    """Build the editable material table used in the dashboard."""
     rows = []
     for node in nodes:
         ids_str = " • ".join(node["material_ids"]) if node["material_ids"] else ""
@@ -155,7 +159,7 @@ def _build_editor_df(nodes, selected_label=None):
 
 
 def _render_event_badges(selected_node):
-    """Render event badges one per line with generous spacing, highlighting the selected material's badges."""
+    """Render the service event badges for the currently selected material node."""
     if selected_node is None:
         st.caption("Check the 'View' box on a material row to see related service events.")
         return
@@ -182,7 +186,7 @@ def _render_event_badges(selected_node):
 
 
 def render_material_table(nodes):
-    """Render exactly two tables: Main (left checkbox to view/move) and Corrected (below)."""
+    """Render the main and corrected material tables and manage move/view state."""
     if "moved_materials" not in st.session_state:
         st.session_state.moved_materials = set()
     if "main_selected_label" not in st.session_state:
@@ -275,6 +279,7 @@ def render_material_table(nodes):
 
 
 def material_duplicacy_page():
+    """Render the material duplicity dashboard page."""
     st.subheader("Material Duplicity")
     st.write("Material appearing multiple times across different Service Events.")
 
@@ -292,6 +297,7 @@ def material_duplicacy_page():
 
 
 def main():
+    """Entry point for the material duplicity page."""
     material_duplicacy_page()
 
 

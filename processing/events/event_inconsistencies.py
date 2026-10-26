@@ -16,12 +16,14 @@ from utils.logger import logger
 
 
 def get_embeddings(events):
+    """Generate semantic embeddings for a list of service event names."""
     event_list = [str(event) for event in events]
     model = SentenceTransformer('all-mpnet-base-v2')
     embeddings = model.encode(event_list)
     return embeddings
 
 def event_similarity(events):
+    """Compute pairwise event similarity and identify likely duplicate events."""
     embeddings = get_embeddings(events)
     similarity_matrix = cosine_similarity(embeddings)
     similarity_df = pd.DataFrame(
@@ -51,6 +53,7 @@ def event_similarity(events):
     return similarity_df_melt, embeddings
 
 def event_clustering(events, embeddings):
+    """Cluster service events into groups using agglomerative clustering."""
     cluster_model = AgglomerativeClustering(
         n_clusters=100,
         metric='l2',
@@ -66,6 +69,7 @@ def event_clustering(events, embeddings):
     return agg_clust_df
 
 def spellcheck_on_events(events, embeddings):
+    """Check event names for likely misspellings while ignoring known domain terms."""
     agg_clust_df = event_clustering(events, embeddings)
     # Check all service events in the clustering dataframe, not just a subset.
     all_events = (
@@ -120,6 +124,7 @@ def spellcheck_on_events(events, embeddings):
     return topic_15_spellcheck
 
 def get_event_distribution():
+    """Load the service event distribution dataset and save it as a processed input."""
     # Get the distribution data
     eve_db = fetch_input_from_DB(config.input_files.serviceEvent_distribution, True)
     eve_db.to_excel(os.path.join(config.locations.inputs, config.input_files.serviceEvent_distribution +".xlsx"), index=False)
@@ -127,6 +132,7 @@ def get_event_distribution():
 
 
 def processing_events_allThreads(material_df=None):
+    """Run the full event inconsistency workflow for clustering and spell-checking."""
     if material_df is None:
         material_file = os.path.join(
             config.locations.inputs,

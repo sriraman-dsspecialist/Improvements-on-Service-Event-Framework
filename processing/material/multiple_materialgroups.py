@@ -8,6 +8,7 @@ from utils.utility import save_excel_sheets
 from pathlib import Path
 
 def get_mg_n(df, df_req, mgg1, n=1):
+    """Return rows for service events that are associated with exactly n material groups."""
     req_cols2 = ['Serviceeventcode', 'MaterialGroup', 'MaterialGroupDescription']
     mggf2 = df_req.loc[df_req['Serviceeventcode'].isin(mgg1.loc[(mgg1['MaterialGroup']==n),'Serviceeventcode']), req_cols2].drop_duplicates()
     mggf2.sort_values(by='Serviceeventcode', inplace=True)
@@ -16,6 +17,7 @@ def get_mg_n(df, df_req, mgg1, n=1):
 
 
 def process_multiple_materialgroups(material_df):
+    """Create the multi-material-group workbook for service events with several group assignments."""
     df = material_df.loc[material_df['MaterialGroup']!='N/A']
     req_cols = ['Serviceeventcode', 'MaterialGroup', 'MaterialGroupDescription']
     df_req = df[req_cols].drop_duplicates(ignore_index=True)

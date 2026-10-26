@@ -13,12 +13,14 @@ from utils.config import config
 
 
 def _normalize_name(value):
+    """Normalize a value by stripping whitespace and treating missing values as blank."""
     if pd.isna(value):
         return ""
     return str(value).strip()
 
 
 def _find_col(cols, candidates):
+    """Return the first column name in a dataframe whose name matches any candidate."""
     for c in candidates:
         for col in cols:
             if str(col).strip().lower() == c.lower():
@@ -37,6 +39,7 @@ def _and_or_symbol(value: str) -> str:
 
 
 def load_material_group_conflicts(xlsx_path: str, num_conflicts=100):
+    """Load material-group conflict rows for the AND condition and keep a bounded sample."""
     # TODO: num_conflicts can come from the config
     df = pd.read_excel(xlsx_path)
 
@@ -333,6 +336,7 @@ def render_conflict_table(df: pd.DataFrame):
 
 
 def material_group_conflict_page_and():
+    """Render the AND-based material vs material-group conflict dashboard."""
     st.subheader("Material vs Material Group Service Event Conflict")
 
     xlsx_path = os.path.join(config.locations.processed, config.processed_files.material_materialgroup_conflicts + "_processed.xlsx")
@@ -352,6 +356,7 @@ def material_group_conflict_page_and():
 
 
 def main():
+    """Entry point for the AND conflict page."""
     material_group_conflict_page_and()
 
 

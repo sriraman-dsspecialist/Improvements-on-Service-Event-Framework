@@ -26,6 +26,11 @@ logging.getLogger("urllib3").setLevel(logging.ERROR)
 logging.getLogger("streamlit").setLevel(logging.ERROR)
 
 def main():
+    """Run the full ETL pipeline and launch the Streamlit dashboard when enabled.
+
+    The configuration file controls whether data is fetched from SQL Server, processed,
+    and whether the UI should be launched after all steps complete.
+    """
     try:
         # Data fetch stage
         if config.run.data_fetch:

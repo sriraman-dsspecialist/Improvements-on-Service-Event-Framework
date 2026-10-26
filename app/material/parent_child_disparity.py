@@ -13,10 +13,12 @@ from utils.config import config
 
 
 def _normalize_excel_column_name(column_name):
+    """Normalize an Excel header by stripping spaces and underscores for matching."""
     return str(column_name).strip().lower().replace(" ", "").replace("_", "")
 
 
 def _coerce_int(value):
+    """Safely coerce a value to an integer or return None when conversion is not possible."""
     if pd.isna(value):
         return None
     if isinstance(value, str):
@@ -74,6 +76,7 @@ def load_event_material_group_summary(xlsx_path):
 
 
 def get_child_count_options(summary_df):
+    """Return the unique child-count values from the parent summary data."""
     if summary_df is None or summary_df.empty:
         return []
     counts = sorted({int(row) for row in summary_df["child_count"].dropna().tolist() if _coerce_int(row) is not None})
@@ -81,6 +84,7 @@ def get_child_count_options(summary_df):
 
 
 def get_serviceevent_options_for_child_count(summary_df, child_count):
+    """Return the parent service event codes matching the selected child count."""
     if summary_df is None or summary_df.empty:
         return []
 
@@ -120,6 +124,7 @@ def load_event_parent_child_rows(xlsx_path, service_event_code):
 
 
 def _find_column_name(df, candidates):
+    """Find the best matching column name from a set of normalized candidate aliases."""
     normalized_map = {_normalize_excel_column_name(col): col for col in df.columns}
     for candidate in candidates:
         if candidate in normalized_map:
@@ -128,6 +133,7 @@ def _find_column_name(df, candidates):
 
 
 def _format_material_label(material_name, material_number):
+    """Compose a readable material label using the material name and number if present."""
     name = "" if pd.isna(material_name) else str(material_name).strip()
     number = "" if pd.isna(material_number) else str(material_number).strip()
 
@@ -141,10 +147,12 @@ def _format_material_label(material_name, material_number):
 
 
 def _flatten_html(markup: str) -> str:
+    """Strip indentation from generated HTML so it renders cleanly inside Streamlit."""
     return "\n".join(line.strip() for line in markup.strip().splitlines())
 
 
 def custom_material_badge_html(label: str, bg_color: str = "#0ea5e9"):
+    """Create the HTML badge used to show a material label in the disparity view."""
     markup = f"""
     <span style="
         display: flex;
@@ -172,6 +180,7 @@ def custom_material_badge_html(label: str, bg_color: str = "#0ea5e9"):
 
 
 def _materials_table_html(items: list) -> str:
+    """Render a compact HTML table of child material entries for the selected parent."""
     rows_html = "".join(
         f"""
         <tr>
@@ -199,6 +208,7 @@ def _materials_table_html(items: list) -> str:
 
 
 def _render_material_badges(detail_rows):
+    """Render parent-child material cards grouped by child service event."""
     if detail_rows is None or detail_rows.empty:
         return
 
@@ -267,6 +277,7 @@ def _render_material_badges(detail_rows):
 
 
 def disparity_parent_child_page():
+    """Render the parent-child material disparity dashboard."""
     st.title("Disparity observed between parent and child materials")
     st.write("Parent material belonging to a particular service event and its associated child materials may be spread out in different service events")
     xlsx_path = os.path.join(config.locations.processed, config.processed_files.disparity_materials+ "_processed.xlsx")
@@ -318,6 +329,7 @@ def disparity_parent_child_page():
 
 
 def main():
+    """Entry point for the parent-child disparity dashboard."""
     disparity_parent_child_page()
 
 

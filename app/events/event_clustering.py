@@ -15,14 +15,17 @@ from utils.config import config
 
 
 def _normalize_event_name(value):
+    """Normalize event names by trimming whitespace and converting to lowercase."""
     return " ".join(str(value).strip().split()).casefold()
 
 
 def _pair_key(event1, event2):
+    """Create a stable key for an unordered pair of event names."""
     return tuple(sorted([_normalize_event_name(event1), _normalize_event_name(event2)]))
 
 
 def _canonicalize_pair_table(df):
+    """Sort and deduplicate event pairs into a standard pair layout for output."""
     if df is None or df.empty:
         return pd.DataFrame(columns=["Primary Event", "Secondary Event"])
 
@@ -45,6 +48,7 @@ def _canonicalize_pair_table(df):
 
 
 def _show_tooltip_message(message, duration_ms=10000):
+    """Display a temporary toast-style tooltip message in the Streamlit app."""
     safe_message = json.dumps(message)
     st.components.v1.html(
         f"""
@@ -78,6 +82,7 @@ def _show_tooltip_message(message, duration_ms=10000):
 
 
 def _load_event_pairs():
+    """Load the processed event-pair similarity data from the saved workbook."""
     workbook_path = os.path.join(config.locations.processed, config.processed_files.event_inconsistencies+ "_processed.xlsx")
 
     if not os.path.exists(workbook_path):
@@ -127,6 +132,7 @@ def _load_event_pairs():
 
 
 def event_clusters():
+    """Render the service event clustering dashboard with similarity threshold controls."""
     st.title("Event Clustering")
     st.write("Service Events are clustered on similarities based on their names.")
     st.markdown(
@@ -283,6 +289,7 @@ def event_clusters():
 
 
 def main():
+    """Entry point for the event clustering page when run directly."""
     event_clusters()
 
 

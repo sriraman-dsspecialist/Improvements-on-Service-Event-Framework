@@ -13,6 +13,7 @@ from utils.config import config
 
 
 def _load_spell_check_rows():
+    """Load the spell-check review rows and keep only events requiring manual review."""
     workbook_path = os.path.join(config.locations.processed, config.processed_files.event_inconsistencies+ "_processed.xlsx")
 
     if not os.path.exists(workbook_path):
@@ -37,6 +38,7 @@ def _load_spell_check_rows():
 
 
 def misspelt_events():
+    """Render the misspelt event review table, split across two columns for readability."""
     st.title("Misspelt Events")
     st.write("Service Events that are potentially misspelt are identified.")
 
@@ -59,6 +61,7 @@ def misspelt_events():
 
 
 def main():
+    """Entry point for the misspelt events page."""
     misspelt_events()
 
 

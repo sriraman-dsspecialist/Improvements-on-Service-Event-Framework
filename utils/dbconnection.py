@@ -16,7 +16,7 @@ logger.info(f"{logger_package_string}Database connection configured successfully
 
 
 def close_db_connection():
-    """Dispose the configured SQLAlchemy engine to close the DB connection."""
+    """Dispose the configured SQLAlchemy engine to close the database connection."""
     if engine is not None:
         logger.info(f"{logger_package_string}Closing database connection...")
         engine.dispose()

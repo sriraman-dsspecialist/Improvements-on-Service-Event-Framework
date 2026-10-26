@@ -12,12 +12,14 @@ from utils.config import config
 
 
 def _normalize_name(value):
+    """Normalize a cell value by stripping whitespace and blanking missing entries."""
     if pd.isna(value):
         return ""
     return str(value).strip()
 
 
 def _find_col(cols, candidates):
+    """Find the first matching column name from a list of valid aliases."""
     for c in candidates:
         for col in cols:
             if str(col).strip().lower() == c.lower():
@@ -31,6 +33,7 @@ def _flatten_html(markup: str) -> str:
 
 
 def build_materialgroup_tree(xlsx_path: Path):
+    """Build a grouped material-group tree with unique shared material entries removed by event."""
     df = pd.read_excel(xlsx_path)
 
     cols = list(df.columns)
@@ -87,7 +90,7 @@ def build_materialgroup_tree(xlsx_path: Path):
 
 
 def _format_materials(pairs):
-    """Group (name, id) pairs by material name and merge ids with bold dot separator."""
+    """Format material pairs into a readable list grouped by material name."""
     grouped = {}
     for name, mid in pairs:
         grouped.setdefault(name, [])
@@ -105,6 +108,7 @@ def _format_materials(pairs):
 
 
 def custom_event_badge_html(event_code: str):
+    """Create the stylized event badge used in the material-group mixie view."""
     markup = f"""
     <span style="
         display: flex;
@@ -132,7 +136,7 @@ def custom_event_badge_html(event_code: str):
 
 
 def _materials_table_html(items: list) -> str:
-    """Render materials as a header-less table with horizontal borders only."""
+    """Render a compact HTML table for material names and ids."""
     rows_html = "".join(
         f"""
         <tr>
@@ -160,6 +164,7 @@ def _materials_table_html(items: list) -> str:
 
 
 def render_event_material_table(event_name: str, materials: list):
+    """Render the material table for a single event inside a material-group card."""
     st.markdown(custom_event_badge_html(event_name), unsafe_allow_html=True)
     formatted_materials = _format_materials(materials)
     if formatted_materials:
@@ -185,6 +190,7 @@ def render_event_material_table(event_name: str, materials: list):
 
 
 def render_materialgroup_cards(nodes):
+    """Render all material-group cards for the selected group slices."""
     for node in nodes:
         group_id = node["group_id"]
         description = node["description"]
@@ -237,6 +243,7 @@ def split_nodes_into_columns(nodes, chunk_size):
 
 
 def materialgroup_mixie_page():
+    """Render the material-group mixie ranking page."""
     st.subheader("Material Group Mixie")
     st.write("Materials belonging to a given Material Group belonging to different Service Events")
 
@@ -260,6 +267,7 @@ def materialgroup_mixie_page():
 
 
 def main():
+    """Entry point for the material group mixie page."""
     materialgroup_mixie_page()
 
 

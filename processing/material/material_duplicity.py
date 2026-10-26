@@ -10,6 +10,7 @@ from processing.material.multiple_materialgroups import process_multiple_materia
 from processing.material.material_disparity import disparity_materials
 
 def material_duplicity(material_df):
+    """Identify duplicate materials used across multiple service events and save the results."""
     if material_df is None or material_df.empty:
         raise ValueError("No valid material data provided")
 
@@ -27,7 +28,7 @@ def material_duplicity(material_df):
 
 
 def materialGroup_duplicity(qw):
-    
+    """Find repeated material groups and export the grouped duplicate records."""
     qw1 = qw[['Serviceeventcode', 'MaterialGroup', 'AND_OR']].drop_duplicates()
     qw1c = pd.DataFrame(qw1['MaterialGroup'].value_counts()).reset_index()
     qw1c = qw1c.loc[qw1c['count']>1]
@@ -40,6 +41,7 @@ def materialGroup_duplicity(qw):
 
 
 def material_vs_materialgroup(material_df, materialgroup_df):
+    """Compare material records with material-group records and save cross-field conflicts."""
     req_cols = ['Serviceeventcode', 'Itemnumber', 'MaterialName', 'MaterialGroup', 'MaterialGroupDescription','AND_OR']
     mg_all  = material_df[req_cols].drop_duplicates()
     qw1 = materialgroup_df[['Serviceeventcode', 'MaterialGroup', 'AND_OR']].drop_duplicates()
@@ -50,6 +52,7 @@ def material_vs_materialgroup(material_df, materialgroup_df):
 
 
 def materialgroup_mixie(material_df):
+    """Detect material groups that appear in multiple event contexts and save the mixed results."""
     req_cols = ['Serviceeventcode', 'MaterialGroup', 'AND_OR']
     dmg_all = material_df[req_cols].drop_duplicates()
     dmgg = dmg_all.groupby('MaterialGroup').size().reset_index(name='count')
@@ -69,7 +72,7 @@ def materialgroup_mixie(material_df):
  
 
 def processing_material_allthreads(material_df = None, materialgroup_df = None):
-
+    """Run the end-to-end material quality checks across duplicate, conflict, and disparity logic."""
     if material_df is None:
         material_df = load_input_excel(config.input_files.serviceEvent_material)
     if materialgroup_df is None:

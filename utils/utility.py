@@ -166,7 +166,13 @@ def get_float_sequence(start=1, stop=7.99, num=0):
 make_df_cols_lowercase = lambda df: df.rename(columns={col: col.lower() for col in df.columns})
 
 def load_input_excel(file_key):
-    """Load an Excel file from the configured inputs directory by file key name."""
+    """Load an Excel source file using the configured input key.
+
+    Parameters
+    ----------
+    file_key : str
+        Name of the configured input file entry in the YAML config.
+    """
     base_dir = Path(config.locations.inputs)
     file_name = getattr(config.input_files, file_key, None)
     if file_name is None:
@@ -179,7 +185,15 @@ def load_input_excel(file_key):
     raise FileNotFoundError(f"No file found for '{file_key}' in {base_dir}")
 
 def save_excel_sheets(data_dict, excel_path):
+    """Write a dictionary of DataFrames to a multi-sheet Excel workbook.
 
+    Parameters
+    ----------
+    data_dict : dict
+        Mapping of sheet names to DataFrame-like objects.
+    excel_path : str or Path
+        Output Excel file path.
+    """
     with pd.ExcelWriter(excel_path, engine="openpyxl") as writer:
         for sheet_name, df_sheet in data_dict.items():
             if isinstance(df_sheet, pd.DataFrame):

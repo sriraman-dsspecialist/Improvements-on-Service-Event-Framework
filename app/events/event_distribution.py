@@ -15,6 +15,7 @@ from utils.config import config
 
 
 def _load_service_event_orders():
+    """Load the service event order counts workbook and normalize the required columns."""
     file_path = os.path.join(config.locations.inputs, config.input_files.serviceEvent_distribution +".xlsx")
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"Service event order count file not found: {file_path}")
@@ -35,10 +36,12 @@ def _load_service_event_orders():
 
 
 def _wrap_legend_label(name: str, width: int = 24) -> str:
+    """Wrap long event labels with HTML breaks for clean Plotly legends."""
     return "<br>".join(textwrap.wrap(str(name), width=width))
 
 
 def _event_timeline_long(event_names, event_df: pd.DataFrame, wrap_legend: bool = True) -> pd.DataFrame:
+    """Create a long-form timeline table for one or more selected service events."""
     valid_names = [name for name in event_names if name in set(event_df["ServiceEventName"])]
     if not valid_names:
         return pd.DataFrame(columns=["Year", "ServiceEventName", "LegendLabel", "Order Count"])
@@ -67,6 +70,7 @@ def _event_timeline_long(event_names, event_df: pd.DataFrame, wrap_legend: bool 
 
 
 def _prepare_year_ranking_df(event_df: pd.DataFrame, year: int, ascending: bool, limit: int = 5) -> pd.DataFrame:
+    """Build the ranked event table for a single year and ordering direction."""
     year_df = (
         event_df[event_df["Year"] == year]
         .groupby("ServiceEventName", as_index=False)["count_orders"]
@@ -84,6 +88,7 @@ def _prepare_year_ranking_df(event_df: pd.DataFrame, year: int, ascending: bool,
 
 
 def _build_event_bubble_chart(chart_df: pd.DataFrame, dot_color: str = "#2563eb", height: int = 400):
+    """Build the bubble chart used for ranking service events in a single year."""
     category_order = chart_df["LegendLabel"].tolist()
     fig = px.scatter(
         chart_df,
@@ -107,6 +112,7 @@ def _build_event_bubble_chart(chart_df: pd.DataFrame, dot_color: str = "#2563eb"
 
 
 def _build_timeline_bubble_chart(chart_df: pd.DataFrame, dot_color: str = "#10b981", height: int = 440):
+    """Build the trend bubble chart for a selected service event over multiple years."""
     plot_df = chart_df.copy()
     plot_df["BubbleSize"] = plot_df["Order Count"].clip(lower=1)
     fig = px.scatter(
@@ -130,6 +136,7 @@ def _build_timeline_bubble_chart(chart_df: pd.DataFrame, dot_color: str = "#10b9
 
 
 def event_distribution():
+    """Render the service event distribution dashboard with ranking and trend views."""
     st.title("Distribution of Service Events")
     st.write("Count of Service Orders over Service Events x Year")
 
@@ -196,6 +203,7 @@ def event_distribution():
 
 
 def main():
+    """Entry point for the event distribution page when executed directly."""
     event_distribution()
 
 

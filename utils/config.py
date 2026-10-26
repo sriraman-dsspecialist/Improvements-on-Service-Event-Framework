@@ -32,6 +32,7 @@ class ConfigFromYaml:
 
 
 def _normalize_path(path_value, base_dir=None):
+    """Normalize a configured path by expanding the base directory placeholder."""
     if path_value is None:
         return None
 
@@ -47,6 +48,7 @@ def _normalize_path(path_value, base_dir=None):
 
 
 def _resolve_yaml_paths(data, base_dir):
+    """Resolve `${base_dir}` placeholders recursively across nested YAML values."""
     if isinstance(data, dict):
         resolved = {}
         for key, value in data.items():
